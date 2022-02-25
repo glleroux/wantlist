@@ -1,0 +1,27 @@
+.page-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#releases-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.release {
+  background-color: #f1f1f1;
+  width: 400px;
+  height: 400px;
+  margin: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
