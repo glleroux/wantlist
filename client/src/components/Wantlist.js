@@ -1,9 +1,15 @@
-import getWantlistPrices from "./utils/getWantlistPrices";
+import getWantlistPrices from "../utils/getWantlistPrices"
 
-const Wantlist = () => {
+const Wantlist = ({ userWantlist }) => {
 
     return (
-        <div>temp</div>
+        <div>
+            {userWantlist
+            .sort((a, b) => a.ELOscore < b.ELOscore ? 1 : -1)
+            .map((release) => 
+                <div>{release.basic_information.title} -- {release.ELOscore}</div>
+            )}  
+        </div>
     )
 }
 

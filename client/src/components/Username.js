@@ -8,7 +8,7 @@ const Username = ({ username, handleSubmit, setUsername }) => {
                 value={username}
                 placeholder="Enter Discogs username"
             ></input>
-            <button onClick={handleSubmit}>Sync</button>
+            <button type='button' onClick={handleSubmit}>Sync</button>
         </form>
     )
 }
