@@ -1,18 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import _ from 'lodash'
 import Elo from "@pelevesque/elo";
 
 const HeadToHead = ({ releases, setUserWantlist }) => {
 
-    const [previousContests, setPreviousContests] = useState({})
+    const [previousContests, setPreviousContests] = useState(() => {
+        const savedPreviousContests = JSON.parse(localStorage.getItem("previous_contests"))
+        return savedPreviousContests || {};
+      })
     const [contestants, setContestants] = useState([releases[0], releases[1]])
-    const [numRounds, setNumRounds] = useState(0)
-    const [finishedPlaying, setFinishedPlaying] = useState(false)
-
-    console.log('prev contests: ', previousContests)
-    console.log('prev contents length: ', Object.keys(previousContests).length)
-    console.log('rounds played: ', numRounds)
-
+    const navigate = useNavigate()
     
     const updateReleaseScores = (winner, loser, newReleaseScores) => {
         console.log(newReleaseScores)
@@ -24,6 +22,7 @@ const HeadToHead = ({ releases, setUserWantlist }) => {
                 ? {...release, ELOscore : newReleaseScores.loser} 
                 : release 
         ))
+        localStorage.setItem("wantlist", JSON.stringify(releases))
     }
 
     const getNewReleaseScores = (winningRelease, losingRelease) => {
@@ -41,25 +40,25 @@ const HeadToHead = ({ releases, setUserWantlist }) => {
     }
 
     const saveContest = (contestantA, contestantB) => {
-        const tempState = {...previousContests}
+        const initialState = {...previousContests}
         
-        if (!tempState[contestantA.id]) { //if contestantA doesn't exist in list of previous contests                  
-            tempState[contestantA.id] = [contestantB.id] //create contestantA and add contest against contestantB
+        if (!initialState[contestantA.id]) { //if contestantA doesn't exist in list of previous contests                  
+            initialState[contestantA.id] = [contestantB.id] //create contestantA and add contest against contestantB
         } else {
-            if (!tempState[contestantA.id].includes(contestantB.id)) { //if contestantA does exist but hasn't contestedB before 
-                tempState[contestantA.id].push(contestantB.id) //add B
+            if (!initialState[contestantA.id].includes(contestantB.id)) { //if contestantA does exist but hasn't contestedB before 
+                initialState[contestantA.id].push(contestantB.id) //add B
             }                                                        
         }
 
-        if (!tempState[contestantB.id ]) {
-            tempState[contestantB.id] = [contestantA.id]
+        if (!initialState[contestantB.id ]) {
+            initialState[contestantB.id] = [contestantA.id]
         } else {
-            if (!tempState[contestantB.id].includes(contestantA.id)) {
-                tempState[contestantB.id].push(contestantA.id) 
+            if (!initialState[contestantB.id].includes(contestantA.id)) {
+                initialState[contestantB.id].push(contestantA.id) 
             } 
         }
-
-        setPreviousContests(tempState)
+        setPreviousContests(initialState)
+        localStorage.setItem("previous_contests", JSON.stringify(initialState))
     }  
     
     const getNewContest = () => {
@@ -94,20 +93,15 @@ const HeadToHead = ({ releases, setUserWantlist }) => {
         const newReleaseScores = getNewReleaseScores(winner, loser)
         updateReleaseScores(winner, loser, newReleaseScores)
         saveContest(winner, loser)
-        setNumRounds(numRounds + 1)
         if (getNewContest()) {
             setContestants(getNewContest)
         } else {
-            setFinishedPlaying(true)
+            navigate('/wantlist')
         }
     }
     
     return (
         <div className='page-container'>
-            {finishedPlaying ? 
-                <div>finished</div>
-            
-            :
             <div id="game-container">
                 <div id="releases-container">
                     <div 
@@ -137,9 +131,10 @@ const HeadToHead = ({ releases, setUserWantlist }) => {
                             <p style={{'color': 'yellow', 'fontSize': 24, 'fontWeight': 'bold'}}>ELO SCORE: {contestants[1].ELOscore}</p>
                         </div>
                 </div>
+                <div className="button-container">
+                        <button type='button' onClick={()=>navigate('/wantlist')}>exit</button>
+                </div>
             </div>
-            }
-            
         </div>
     )
 }
