@@ -17,7 +17,7 @@ const getWantlistPrices = async (wantlist) => {
       );
       const lowestPrice = response.data.lowest_price;
       const releasePrice = lowestPrice ? lowestPrice.value : null;
-      console.log(releasePrice);
+      console.log(`${releaseID}: ${releasePrice}`);
       return releasePrice;
     };
   
@@ -27,6 +27,8 @@ const getWantlistPrices = async (wantlist) => {
         price: await getPrice(release.id)
       }))
     );
+    console.log('finish')
+    console.log(pricedReleases)
     return pricedReleases;
   };
   
